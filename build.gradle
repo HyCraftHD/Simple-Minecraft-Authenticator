@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-	implementation group: "net.hycrafthd", name: "minecraft-authenticator", version: config.minecraft-authenticator.version
+	implementation group: "net.hycrafthd", name: "minecraft-authenticator", version: config.minecraft_authenticator.version
 }
 
 group = "net.hycrafthd"
