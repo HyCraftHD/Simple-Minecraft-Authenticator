@@ -1,0 +1,151 @@
+buildscript {
+	
+	ext.buildProps = file "build.properties"
+	
+	buildProps.withReader {
+		def prop = new Properties()
+		prop.load(it)
+		ext.config = new ConfigSlurper().parse prop
+	}
+	
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath group: "org.eclipse.jgit", name: "org.eclipse.jgit", version: "5.11.1.202105131744-r"
+	}
+}
+
+plugins {
+	id "java-library"
+	id "eclipse"
+	id "maven-publish"
+	id "com.palantir.launch-config" version "1.2.0"
+}
+
+repositories {
+	mavenCentral()
+	maven {
+		url "https://repo.u-team.info"
+	}
+}
+
+dependencies {
+	implementation group: "net.hycrafthd", name: "minecraft-authenticator", version: config.minecraft-authenticator.version
+}
+
+group = "net.hycrafthd"
+archivesBaseName = "simple_minecraft_authenticator"
+version = "3.0.0"
+
+tasks.withType(JavaCompile) {
+	options.encoding = "UTF-8"
+}
+
+sourceSets {
+	main
+	test
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+	withSourcesJar()
+	withJavadocJar()
+}
+
+tasks.named("jar") {
+	archiveClassifier = ""
+	
+	from "LICENSE"
+	
+	manifest {
+		attributes (
+				"Implementation-Version": project.version,
+				"Implementation-Vendor": "HyCraftHD, Luc_ZZ",
+				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+				)
+	}
+}
+
+tasks.withType(PublishToMavenRepository) {
+	onlyIf {
+		getValue("maven.password") != null
+	}
+}
+
+publishing {
+	publish.dependsOn build
+	
+	repositories {
+		maven {
+			url "https://repo.u-team.info"
+			credentials {
+				username = "maven"
+				password = getValue("maven.password")
+			}
+		}
+	}
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+			
+			groupId = project.group
+			artifactId = project.archivesBaseName
+			version = project.version
+			
+			pom {
+				name = project.archivesBaseName
+				description = "Simple-Minecraft-Authenticator"
+				url = "https://github.com/HyCraftHD/Simple-Minecraft-Authenticator"
+				scm {
+					url = "https://github.com/HyCraftHD/Simple-Minecraft-Authenticator"
+					connection = "scm:git:git://github.com/HyCraftHD/Simple-Minecraft-Authenticator.git"
+					developerConnection = "scm:git:git@github.com:HyCraftHD/Simple-Minecraft-Authenticator.git"
+				}
+				
+				issueManagement {
+					system = "github"
+					url = "https://github.com/HyCraftHD/Simple-Minecraft-Authenticator/issues"
+				}
+				licenses {
+					license {
+						name = "Apache License 2.0"
+						url = "https://github.com/HyCraftHD/Simple-Minecraft-Authenticator/blob/main/LICENSE"
+						distribution = "repo"
+					}
+				}
+				developers {
+					developer {
+						name = "HyCraftHD"
+					}
+				}
+			}
+		}
+	}
+}
+
+def getValue(name) {
+	def envVariable = System.getenv(name)
+	if(envVariable != null) {
+		return envVariable
+	} else {
+		if (project.hasProperty(name)) {
+			return project.getProperty(name)
+		}
+	}
+	return null;
+}
+
+task release {
+	tasks.release.dependsOn build
+	tasks.release.dependsOn publish
+	doLast {
+		def git = org.eclipse.jgit.api.Git.open(file("${rootDir}"))
+		if(git != null) {
+			git.tag().setName(project.version).setForceUpdate(true).call()
+		}
+		println "Released, Need to push tags"
+	}
+}
