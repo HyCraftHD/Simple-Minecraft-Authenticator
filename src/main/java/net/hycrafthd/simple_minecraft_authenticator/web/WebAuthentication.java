@@ -1,4 +1,4 @@
-package net.hycrafthd.simple_minecraft_authenticator.console;
+package net.hycrafthd.simple_minecraft_authenticator.web;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -37,6 +37,11 @@ public class WebAuthentication implements AuthenticationMethod {
 	
 	public WebAuthentication(PrintStream out) {
 		this.out = out;
+	}
+	
+	@Override
+	public String name() {
+		return "web";
 	}
 	
 	@Override

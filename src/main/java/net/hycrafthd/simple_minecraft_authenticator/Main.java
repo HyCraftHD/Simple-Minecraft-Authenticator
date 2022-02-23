@@ -1,6 +1,6 @@
 package net.hycrafthd.simple_minecraft_authenticator;
 
-import net.hycrafthd.simple_minecraft_authenticator.console.WebAuthentication;
+import net.hycrafthd.simple_minecraft_authenticator.web.WebAuthentication;
 
 public class Main {
 	

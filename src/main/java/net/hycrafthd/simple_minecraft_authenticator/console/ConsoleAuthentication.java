@@ -25,6 +25,11 @@ public class ConsoleAuthentication implements AuthenticationMethod {
 	}
 	
 	@Override
+	public String name() {
+		return "console";
+	}
+	
+	@Override
 	public AuthenticationFile executeMethod() {
 		out.println("Open the following link and log into your microsoft account. Paste the code parameter of the returned url.");
 		out.println("Code should look like this: M.R3_BL2.00000000-0000-0000-0000-000000000000");
