@@ -11,7 +11,7 @@ public class AuthenticationMethodCreatorValueConverter implements ValueConverter
 	
 	@Override
 	public AuthenticationMethodCreator convert(String value) {
-		return SimpleMinecraftAuthentication.getMethod(value.toLowerCase(Locale.ROOT)).get();
+		return SimpleMinecraftAuthentication.getMethodOrThrow(value.toLowerCase(Locale.ROOT));
 	}
 	
 	@Override

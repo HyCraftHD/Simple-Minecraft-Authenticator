@@ -10,15 +10,17 @@ public class SimpleAuthenticationMethodCreator implements AuthenticationMethodCr
 	
 	private final String name;
 	private final FullCreator creator;
+	private final FullCreator headlessCreator;
 	private ExecutorService executor;
 	
-	public SimpleAuthenticationMethodCreator(String name, ReducedCreator creator) {
-		this(name, (out, in, executor) -> creator.create(out, executor));
+	public SimpleAuthenticationMethodCreator(String name, ReducedCreator creator, FullCreator headlessCreator) {
+		this(name, (out, in, executor) -> creator.create(out, executor), headlessCreator);
 	}
 	
-	public SimpleAuthenticationMethodCreator(String name, FullCreator creator) {
+	public SimpleAuthenticationMethodCreator(String name, FullCreator creator, FullCreator headlessCreator) {
 		this.name = name;
 		this.creator = creator;
+		this.headlessCreator = headlessCreator;
 	}
 	
 	@Override
@@ -34,6 +36,11 @@ public class SimpleAuthenticationMethodCreator implements AuthenticationMethodCr
 	@Override
 	public AuthenticationMethod create(PrintStream out, InputStream in) {
 		return creator.create(out, in, executor);
+	}
+	
+	@Override
+	public AuthenticationMethod createHeadless(PrintStream out, InputStream in) {
+		return headlessCreator.create(out, in, executor);
 	}
 	
 	public static interface FullCreator {

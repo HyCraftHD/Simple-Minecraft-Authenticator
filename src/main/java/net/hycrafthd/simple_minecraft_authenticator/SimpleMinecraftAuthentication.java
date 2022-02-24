@@ -13,9 +13,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import net.hycrafthd.simple_minecraft_authenticator.creator.AuthenticationMethodCreator;
 import net.hycrafthd.simple_minecraft_authenticator.creator.SimpleAuthenticationMethodCreator;
 import net.hycrafthd.simple_minecraft_authenticator.method.ConsoleAuthentication;
+import net.hycrafthd.simple_minecraft_authenticator.method.HeadlessWebAuthentication;
 import net.hycrafthd.simple_minecraft_authenticator.method.WebAuthentication;
 
 public final class SimpleMinecraftAuthentication {
+	
+	public static final String METHOD_EXTRA_PROPERTY = "method";
 	
 	private static final ExecutorService executor;
 	private static final Map<String, AuthenticationMethodCreator> methods = new HashMap<>();
@@ -33,8 +36,8 @@ public final class SimpleMinecraftAuthentication {
 				return thread;
 			}
 		});
-		addMethod(new SimpleAuthenticationMethodCreator("console", ConsoleAuthentication::new));
-		addMethod(new SimpleAuthenticationMethodCreator("web", WebAuthentication::new));
+		addMethod(new SimpleAuthenticationMethodCreator("console", ConsoleAuthentication::new, ConsoleAuthentication::new));
+		addMethod(new SimpleAuthenticationMethodCreator("web", WebAuthentication::new, HeadlessWebAuthentication::new));
 	}
 	
 	private SimpleMinecraftAuthentication() {
@@ -47,6 +50,10 @@ public final class SimpleMinecraftAuthentication {
 	
 	public static final Optional<AuthenticationMethodCreator> getMethod(String name) {
 		return Optional.ofNullable(methods.get(name));
+	}
+	
+	public static final AuthenticationMethodCreator getMethodOrThrow(String name) throws IllegalArgumentException {
+		return getMethod(name).orElseThrow(() -> new IllegalArgumentException("Authentication type " + name + " does not exist"));
 	}
 	
 	public static final Set<String> getAvailableMethods() {

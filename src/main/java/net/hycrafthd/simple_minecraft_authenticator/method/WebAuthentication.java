@@ -27,13 +27,13 @@ import net.hycrafthd.simple_minecraft_authenticator.result.FileAuthenticationRes
 
 public class WebAuthentication extends AbstractAuthenticationMethod {
 	
-	private static final String BASE_URL = "http://localhost:{port}";
+	protected static final String BASE_URL = "http://localhost:{port}";
 	
-	private static final String LOGIN_PATH = "/ms-oauth";
-	private static final String REDIRECT_PATH = "/ms-oauth/response";
-	private static final String RESULT_PATH = "/ms-oauth/result";
+	protected static final String LOGIN_PATH = "/ms-oauth";
+	protected static final String REDIRECT_PATH = "/ms-oauth/response";
+	protected static final String RESULT_PATH = "/ms-oauth/result";
 	
-	private static final String AZURE_CLIENT_ID = "78590d64-3549-4c5f-9ef5-add1e816fed1";
+	protected static final String AZURE_CLIENT_ID = "78590d64-3549-4c5f-9ef5-add1e816fed1";
 	
 	private ServerSocket serverSocket;
 	
