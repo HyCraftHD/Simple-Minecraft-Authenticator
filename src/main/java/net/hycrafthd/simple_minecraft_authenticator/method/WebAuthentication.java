@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
 import net.hycrafthd.minecraft_authenticator.login.AuthenticationException;
+import net.hycrafthd.minecraft_authenticator.login.AuthenticationFile;
 import net.hycrafthd.minecraft_authenticator.login.Authenticator;
 import net.hycrafthd.minecraft_authenticator.microsoft.AzureApplication;
 import net.hycrafthd.minecraft_authenticator.util.FunctionWithIOException;
@@ -38,6 +39,11 @@ public class WebAuthentication extends AbstractAuthenticationMethod {
 	
 	public WebAuthentication(PrintStream out, ExecutorService executor) {
 		super(out, executor);
+	}
+	
+	@Override
+	public AuthenticationResult existingAuthentication(AuthenticationFile file) {
+		return new FileAuthenticationResult(file, Optional.of(new AzureApplication(AZURE_CLIENT_ID, BASE_URL.replace("{port}", Integer.toString(9999) + REDIRECT_PATH))));
 	}
 	
 	@Override

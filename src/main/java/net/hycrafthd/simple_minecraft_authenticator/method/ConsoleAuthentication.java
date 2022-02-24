@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 
 import net.hycrafthd.minecraft_authenticator.login.AuthenticationException;
+import net.hycrafthd.minecraft_authenticator.login.AuthenticationFile;
 import net.hycrafthd.minecraft_authenticator.login.Authenticator;
 import net.hycrafthd.simple_minecraft_authenticator.result.AuthenticationResult;
 import net.hycrafthd.simple_minecraft_authenticator.result.FileAuthenticationResult;
@@ -22,6 +23,11 @@ public class ConsoleAuthentication extends AbstractAuthenticationMethod {
 	public ConsoleAuthentication(PrintStream out, InputStream in, ExecutorService executor) {
 		super(out, executor);
 		reader = new BufferedReader(new InputStreamReader(new UnclosableInputStream(in), StandardCharsets.UTF_8));
+	}
+	
+	@Override
+	public AuthenticationResult existingAuthentication(AuthenticationFile file) {
+		return new FileAuthenticationResult(file);
 	}
 	
 	@Override
@@ -61,5 +67,4 @@ public class ConsoleAuthentication extends AbstractAuthenticationMethod {
 	protected void finishInitalAuthentication() throws Exception {
 		reader.close();
 	}
-	
 }
