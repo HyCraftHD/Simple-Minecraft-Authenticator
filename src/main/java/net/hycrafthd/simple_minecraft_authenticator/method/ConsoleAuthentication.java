@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 
 import net.hycrafthd.minecraft_authenticator.login.AuthenticationException;
-import net.hycrafthd.minecraft_authenticator.login.AuthenticationFile;
 import net.hycrafthd.minecraft_authenticator.login.Authenticator;
+import net.hycrafthd.simple_minecraft_authenticator.result.AuthenticationResult;
+import net.hycrafthd.simple_minecraft_authenticator.result.FileAuthenticationResult;
 import net.hycrafthd.simple_minecraft_authenticator.util.UnclosableInputStream;
 
 public class ConsoleAuthentication extends AbstractAuthenticationMethod {
@@ -23,10 +25,13 @@ public class ConsoleAuthentication extends AbstractAuthenticationMethod {
 	}
 	
 	@Override
-	protected AuthenticationFile runInitalAuthenticationFile() throws IOException, AuthenticationException {
+	protected AuthenticationResult runInitalAuthentication() throws IOException, AuthenticationException {
+		final URL loginUrl = Authenticator.microsoftLogin();
+		loginUrlCallback.accept(loginUrl);
+		
 		out.println("Open the following link and log into your microsoft account. Paste the code parameter of the returned url.");
 		out.println("Code should look like this: M.R3_BL2.00000000-0000-0000-0000-000000000000");
-		out.println(Authenticator.microsoftLogin());
+		out.println(loginUrl);
 		
 		long startTime = System.currentTimeMillis();
 		while ((System.currentTimeMillis() - startTime) < timeout * 1000 && !reader.ready()) {
@@ -47,13 +52,13 @@ public class ConsoleAuthentication extends AbstractAuthenticationMethod {
 			
 			authenticator.run();
 			
-			return authenticator.getResultFile();
+			return new FileAuthenticationResult(authenticator.getResultFile());
 		}
 		return null;
 	}
 	
 	@Override
-	protected void finishInitalAuthenticationFile() throws Exception {
+	protected void finishInitalAuthentication() throws Exception {
 		reader.close();
 	}
 	

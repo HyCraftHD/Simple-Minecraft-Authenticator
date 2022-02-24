@@ -9,16 +9,20 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
 import net.hycrafthd.minecraft_authenticator.login.AuthenticationException;
-import net.hycrafthd.minecraft_authenticator.login.AuthenticationFile;
 import net.hycrafthd.minecraft_authenticator.login.Authenticator;
+import net.hycrafthd.minecraft_authenticator.microsoft.AzureApplication;
 import net.hycrafthd.minecraft_authenticator.util.FunctionWithIOException;
+import net.hycrafthd.simple_minecraft_authenticator.result.AuthenticationResult;
+import net.hycrafthd.simple_minecraft_authenticator.result.FileAuthenticationResult;
 
 public class WebAuthentication extends AbstractAuthenticationMethod {
 	
@@ -31,25 +35,21 @@ public class WebAuthentication extends AbstractAuthenticationMethod {
 	private static final String AZURE_CLIENT_ID = "78590d64-3549-4c5f-9ef5-add1e816fed1";
 	
 	private ServerSocket serverSocket;
-	private String loginUrl;
 	
 	public WebAuthentication(PrintStream out, ExecutorService executor) {
 		super(out, executor);
 	}
 	
-	public String loginUrl() {
-		return loginUrl;
-	}
-	
 	@Override
-	protected AuthenticationFile runInitalAuthenticationFile() throws IOException, AuthenticationException {
+	protected AuthenticationResult runInitalAuthentication() throws IOException, AuthenticationException {
 		serverSocket = new ServerSocket(0);
 		serverSocket.setSoTimeout(timeout * 1000);
 		
 		final int port = serverSocket.getLocalPort();
 		final String baseUrl = BASE_URL.replace("{port}", Integer.toString(port));
 		
-		loginUrl = baseUrl + LOGIN_PATH;
+		final URL loginUrl = new URL(baseUrl + LOGIN_PATH);
+		loginUrlCallback.accept(loginUrl);
 		
 		out.println("Open the following link and log into your microsoft account.");
 		out.println(loginUrl);
@@ -97,17 +97,19 @@ public class WebAuthentication extends AbstractAuthenticationMethod {
 			return true;
 		});
 		
+		final String redirectUrl = baseUrl + REDIRECT_PATH;
+		
 		final Authenticator authenticator = Authenticator.ofMicrosoft(authorizationCode.get()) //
-				.customAzureApplication(AZURE_CLIENT_ID, baseUrl + REDIRECT_PATH) //
+				.customAzureApplication(AZURE_CLIENT_ID, redirectUrl) //
 				.build();
 		
 		authenticator.run();
 		
-		return authenticator.getResultFile();
+		return new FileAuthenticationResult(authenticator.getResultFile(), Optional.of(new AzureApplication(AZURE_CLIENT_ID, redirectUrl)));
 	}
 	
 	@Override
-	protected void finishInitalAuthenticationFile() throws Exception {
+	protected void finishInitalAuthentication() throws Exception {
 		serverSocket.close();
 	}
 	
