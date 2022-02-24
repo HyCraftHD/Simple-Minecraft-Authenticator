@@ -1,12 +1,18 @@
 package net.hycrafthd.simple_minecraft_authenticator;
 
+import net.hycrafthd.minecraft_authenticator.login.AuthenticationException;
+
 public class Main {
 	
 	public static void main(String[] args) {
-		final AuthenticationMethod authenticationMethod = SimpleMinecraftAuthentication.getMethod("web").get().create();
+		final AuthenticationMethod authenticationMethod = SimpleMinecraftAuthentication.getMethod("console").get().create();
 		authenticationMethod.setTimeout(5);
 		
-		System.out.println(authenticationMethod.initalAuthenticationFile());
+		try {
+			System.out.println(authenticationMethod.initalAuthenticationFile());
+		} catch (AuthenticationException e1) {
+			e1.printStackTrace();
+		}
 		
 		try {
 			Thread.sleep(50000);

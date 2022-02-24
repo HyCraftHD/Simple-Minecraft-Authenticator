@@ -1,12 +1,14 @@
 package net.hycrafthd.simple_minecraft_authenticator.console;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 
+import net.hycrafthd.minecraft_authenticator.login.AuthenticationException;
 import net.hycrafthd.minecraft_authenticator.login.AuthenticationFile;
 import net.hycrafthd.minecraft_authenticator.login.Authenticator;
 import net.hycrafthd.simple_minecraft_authenticator.AbstractAuthenticationMethod;
@@ -22,7 +24,7 @@ public class ConsoleAuthentication extends AbstractAuthenticationMethod {
 	}
 	
 	@Override
-	protected AuthenticationFile runInitalAuthenticationFile() throws Exception {
+	protected AuthenticationFile runInitalAuthenticationFile() throws IOException, AuthenticationException {
 		out.println("Open the following link and log into your microsoft account. Paste the code parameter of the returned url.");
 		out.println("Code should look like this: M.R3_BL2.00000000-0000-0000-0000-000000000000");
 		out.println(Authenticator.microsoftLogin());

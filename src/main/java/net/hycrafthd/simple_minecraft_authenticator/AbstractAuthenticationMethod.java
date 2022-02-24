@@ -6,7 +6,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import net.hycrafthd.minecraft_authenticator.login.AuthenticationException;
 import net.hycrafthd.minecraft_authenticator.login.AuthenticationFile;
+import net.hycrafthd.simple_minecraft_authenticator.util.AuthenticationTimeoutException;
 
 public abstract class AbstractAuthenticationMethod implements AuthenticationMethod {
 	
@@ -26,21 +28,22 @@ public abstract class AbstractAuthenticationMethod implements AuthenticationMeth
 	}
 	
 	@Override
-	public AuthenticationFile initalAuthenticationFile() {
+	public AuthenticationFile initalAuthenticationFile() throws AuthenticationException {
 		try {
 			final AuthenticationFile file = executor.submit(this::runInitalAuthenticationFile).get(timeout, TimeUnit.SECONDS);
 			finishInitalAuthenticationFile();
 			return file;
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		} catch (TimeoutException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (final InterruptedException | TimeoutException ex) {
+			throw new AuthenticationTimeoutException("Authentication was not completed in " + timeout + " seconds", ex);
+		} catch (final ExecutionException ex) {
+			if (ex.getCause() instanceof AuthenticationException authenticationException) {
+				throw authenticationException;
+			} else {
+				throw new AuthenticationException("An exception in the simple authenticator occured", ex);
+			}
+		} catch (final Exception ex) {
+			throw new AuthenticationException("An unknown exception occured", ex);
 		}
-		return null;
 	}
 	
 	protected abstract AuthenticationFile runInitalAuthenticationFile() throws Exception;

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
+import net.hycrafthd.minecraft_authenticator.login.AuthenticationException;
 import net.hycrafthd.minecraft_authenticator.login.AuthenticationFile;
 import net.hycrafthd.minecraft_authenticator.login.Authenticator;
 import net.hycrafthd.minecraft_authenticator.util.FunctionWithIOException;
@@ -37,7 +38,7 @@ public class WebAuthentication extends AbstractAuthenticationMethod {
 	}
 	
 	@Override
-	protected AuthenticationFile runInitalAuthenticationFile() throws Exception {
+	protected AuthenticationFile runInitalAuthenticationFile() throws IOException, AuthenticationException {
 		serverSocket = new ServerSocket(0);
 		serverSocket.setSoTimeout(timeout * 1000);
 		
