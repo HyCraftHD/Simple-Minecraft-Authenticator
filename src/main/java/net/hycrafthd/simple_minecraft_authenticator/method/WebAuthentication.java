@@ -31,9 +31,14 @@ public class WebAuthentication extends AbstractAuthenticationMethod {
 	private static final String AZURE_CLIENT_ID = "78590d64-3549-4c5f-9ef5-add1e816fed1";
 	
 	private ServerSocket serverSocket;
+	private String loginUrl;
 	
 	public WebAuthentication(PrintStream out, ExecutorService executor) {
 		super(out, executor);
+	}
+	
+	public String loginUrl() {
+		return loginUrl;
 	}
 	
 	@Override
@@ -44,8 +49,10 @@ public class WebAuthentication extends AbstractAuthenticationMethod {
 		final int port = serverSocket.getLocalPort();
 		final String baseUrl = BASE_URL.replace("{port}", Integer.toString(port));
 		
+		loginUrl = baseUrl + LOGIN_PATH;
+		
 		out.println("Open the following link and log into your microsoft account.");
-		out.println(baseUrl + LOGIN_PATH);
+		out.println(loginUrl);
 		
 		// Handle login path to redirect to ms oauth login
 		handleRequest(serverSocket, (socketData) -> {
