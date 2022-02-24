@@ -4,8 +4,8 @@ import net.hycrafthd.minecraft_authenticator.login.AuthenticationFile;
 
 public interface AuthenticationMethod {
 	
-	String name();
+	void setTimeout(int seconds);
 	
-	AuthenticationFile executeMethod();
+	AuthenticationFile initalAuthenticationFile();
 	
 }
