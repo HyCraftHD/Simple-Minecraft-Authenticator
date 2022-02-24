@@ -10,14 +10,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import net.hycrafthd.simple_minecraft_authenticator.console.ConsoleAuthentication;
+import net.hycrafthd.simple_minecraft_authenticator.creator.AuthenticationMethodCreator;
 import net.hycrafthd.simple_minecraft_authenticator.creator.SimpleAuthenticationMethodCreator;
-import net.hycrafthd.simple_minecraft_authenticator.web.WebAuthentication;
+import net.hycrafthd.simple_minecraft_authenticator.method.ConsoleAuthentication;
+import net.hycrafthd.simple_minecraft_authenticator.method.WebAuthentication;
 
 public final class SimpleMinecraftAuthentication {
 	
 	private static final ExecutorService executor;
-	private static final Map<String, AuthenticationMethodBuilderCreator> methods = new HashMap<>();
+	private static final Map<String, AuthenticationMethodCreator> methods = new HashMap<>();
 	
 	static {
 		executor = Executors.newCachedThreadPool(new ThreadFactory() {
@@ -39,12 +40,12 @@ public final class SimpleMinecraftAuthentication {
 	private SimpleMinecraftAuthentication() {
 	}
 	
-	public static final synchronized void addMethod(AuthenticationMethodBuilderCreator method) {
+	public static final synchronized void addMethod(AuthenticationMethodCreator method) {
 		methods.putIfAbsent(method.name(), method);
 		method.setExecutor(executor);
 	}
 	
-	public static final Optional<AuthenticationMethodBuilderCreator> getMethod(String name) {
+	public static final Optional<AuthenticationMethodCreator> getMethod(String name) {
 		return Optional.ofNullable(methods.get(name));
 	}
 	
@@ -52,7 +53,7 @@ public final class SimpleMinecraftAuthentication {
 		return Collections.unmodifiableSet(methods.keySet());
 	}
 	
-	public static final AuthenticationMethodBuilderCreator getDefaultMethod() {
+	public static final AuthenticationMethodCreator getDefaultMethod() {
 		return getMethod("console").get();
 	}
 	

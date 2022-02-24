@@ -1,4 +1,4 @@
-package net.hycrafthd.simple_minecraft_authenticator.web;
+package net.hycrafthd.simple_minecraft_authenticator.method;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -19,7 +19,6 @@ import net.hycrafthd.minecraft_authenticator.login.AuthenticationException;
 import net.hycrafthd.minecraft_authenticator.login.AuthenticationFile;
 import net.hycrafthd.minecraft_authenticator.login.Authenticator;
 import net.hycrafthd.minecraft_authenticator.util.FunctionWithIOException;
-import net.hycrafthd.simple_minecraft_authenticator.AbstractAuthenticationMethod;
 
 public class WebAuthentication extends AbstractAuthenticationMethod {
 	

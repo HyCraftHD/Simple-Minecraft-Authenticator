@@ -4,10 +4,9 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.concurrent.ExecutorService;
 
-import net.hycrafthd.simple_minecraft_authenticator.AuthenticationMethod;
-import net.hycrafthd.simple_minecraft_authenticator.AuthenticationMethodBuilderCreator;
+import net.hycrafthd.simple_minecraft_authenticator.method.AuthenticationMethod;
 
-public class SimpleAuthenticationMethodCreator implements AuthenticationMethodBuilderCreator {
+public class SimpleAuthenticationMethodCreator implements AuthenticationMethodCreator {
 	
 	private final String name;
 	private final FullCreator creator;

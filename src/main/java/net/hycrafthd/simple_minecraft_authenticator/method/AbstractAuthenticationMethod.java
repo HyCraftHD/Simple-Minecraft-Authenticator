@@ -1,4 +1,4 @@
-package net.hycrafthd.simple_minecraft_authenticator;
+package net.hycrafthd.simple_minecraft_authenticator.method;
 
 import java.io.PrintStream;
 import java.util.concurrent.ExecutionException;

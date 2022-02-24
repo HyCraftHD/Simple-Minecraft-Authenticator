@@ -1,4 +1,4 @@
-package net.hycrafthd.simple_minecraft_authenticator.console;
+package net.hycrafthd.simple_minecraft_authenticator.method;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +11,6 @@ import java.util.concurrent.ExecutorService;
 import net.hycrafthd.minecraft_authenticator.login.AuthenticationException;
 import net.hycrafthd.minecraft_authenticator.login.AuthenticationFile;
 import net.hycrafthd.minecraft_authenticator.login.Authenticator;
-import net.hycrafthd.simple_minecraft_authenticator.AbstractAuthenticationMethod;
 import net.hycrafthd.simple_minecraft_authenticator.util.UnclosableInputStream;
 
 public class ConsoleAuthentication extends AbstractAuthenticationMethod {
