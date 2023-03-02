@@ -1,0 +1,64 @@
+plugins {
+	id "java-library"
+	id "maven-publish"
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation rootProject
+	implementation group: "net.sf.jopt-simple", name: "jopt-simple", version: config.jopt_simple.version
+}
+
+group = "net.hycrafthd"
+archivesBaseName = "simple_minecraft_authenticator_cli"
+version = rootProject.version
+
+tasks.named("jar") {
+	from "../LICENSE"
+	
+	manifest {
+		attributes (
+				"Implementation-Version": project.version,
+				"Implementation-Vendor": "HyCraftHD",
+				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+				"Fingerprint": project.findProperty("keystore.fingerprint") ?: "NONE",
+				)
+	}
+}
+
+tasks.create("signJar") {
+	dependsOn tasks.named("jar")
+	mustRunAfter tasks.named("jar")
+	
+	enabled = project.hasProperty("createBuild")
+	
+	def keyStore = project.findProperty("keystore")
+	def alias = project.findProperty("keystore.alias")
+	def storePass = project.findProperty("keystore.password")
+	def keyPass = project.findProperty("keystore.password_key")
+	
+	doLast {
+		ant.signjar(
+				keyStore: keyStore,
+				alias: alias,
+				storepass: storePass,
+				keyPass: keyPass,
+				jar: tasks.named("jar").get().archiveFile.get(),
+				signedJar: tasks.named("jar").get().archiveFile.get()
+				)
+	}
+}
+
+tasks.named("assemble") {
+	dependsOn tasks.named("signJar")
+}
+afterEvaluate {
+	tasks.matching { task ->
+		task.group == "publishing"
+	}.each { task ->
+		task.dependsOn("signJar")
+	}
+}
