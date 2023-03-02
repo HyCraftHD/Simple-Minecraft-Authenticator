@@ -1,5 +1,5 @@
 
-package net.hycrafthd.simple_minecraft_authenticator.util;
+package net.hycrafthd.simple_minecraft_authenticator.cli.util;
 
 import java.util.Locale;
 

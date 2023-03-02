@@ -5,9 +5,13 @@ plugins {
 
 repositories {
 	mavenCentral()
+	maven {
+		url "https://repo.u-team.info"
+	}
 }
 
 dependencies {
+	implementation group: "net.hycrafthd", name: "minecraft_authenticator", version: config.minecraft_authenticator.version
 	implementation rootProject
 	implementation group: "net.sf.jopt-simple", name: "jopt-simple", version: config.jopt_simple.version
 }

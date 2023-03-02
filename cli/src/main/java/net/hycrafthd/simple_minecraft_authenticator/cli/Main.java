@@ -1,4 +1,4 @@
-package net.hycrafthd.simple_minecraft_authenticator;
+package net.hycrafthd.simple_minecraft_authenticator.cli;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -16,9 +16,9 @@ import net.hycrafthd.minecraft_authenticator.login.AuthenticationFile;
 import net.hycrafthd.minecraft_authenticator.login.Authenticator;
 import net.hycrafthd.minecraft_authenticator.login.User;
 import net.hycrafthd.minecraft_authenticator.login.XBoxProfile;
-import net.hycrafthd.minecraft_authenticator.util.ConsumerWithIOException;
+import net.hycrafthd.simple_minecraft_authenticator.cli.util.AuthenticationMethodCreatorValueConverter;
 import net.hycrafthd.simple_minecraft_authenticator.creator.AuthenticationMethodCreator;
-import net.hycrafthd.simple_minecraft_authenticator.util.AuthenticationMethodCreatorValueConverter;
+import net.hycrafthd.simple_minecraft_authenticator.util.ConsumerWithIOException;
 import net.hycrafthd.simple_minecraft_authenticator.util.SimpleAuthenticationFileUtil;
 import net.hycrafthd.simple_minecraft_authenticator.util.SimpleAuthenticationFileUtil.AuthenticationData;
 

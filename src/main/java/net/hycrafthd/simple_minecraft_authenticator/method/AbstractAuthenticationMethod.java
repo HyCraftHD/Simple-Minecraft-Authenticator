@@ -43,7 +43,7 @@ public abstract class AbstractAuthenticationMethod implements AuthenticationMeth
 			final AuthenticationResult result = executor.submit(this::runInitalAuthentication).get(timeout, TimeUnit.SECONDS);
 			finishInitalAuthentication();
 			if (result == null) {
-				throw new TimeoutException("Result was null as the authentication methopd did not complete correctly");
+				throw new TimeoutException("Result was null as the authentication method did not complete correctly");
 			}
 			return result;
 		} catch (final InterruptedException | TimeoutException ex) {
