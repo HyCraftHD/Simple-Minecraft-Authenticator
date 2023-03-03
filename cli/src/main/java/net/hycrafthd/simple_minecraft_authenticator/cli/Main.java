@@ -2,6 +2,7 @@ package net.hycrafthd.simple_minecraft_authenticator.cli;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -65,97 +66,100 @@ public class Main {
 			LOGGER.info("Force headless authentication mode");
 		}
 		
-		Authenticator selectedAuthenticator = null;
-		AuthenticationMethodCreator selectedCreator = null;
-		
-		// Try to read file and use that for authentication
-		if (Files.exists(file)) {
-			if (!Files.isRegularFile(file) || !Files.isReadable(file) || !Files.isWritable(file)) {
-				LOGGER.fatal("Cannot read and write to the supplied authentication file {}", file);
-				return;
+		try (final PrintStream loggerStream = IoBuilder.forLogger(LOGGER).setLevel(Level.INFO).setAutoFlush(true).buildPrintStream()) {
+			Authenticator selectedAuthenticator = null;
+			AuthenticationMethodCreator selectedCreator = null;
+			
+			// Try to read file and use that for authentication
+			if (Files.exists(file)) {
+				if (!Files.isRegularFile(file) || !Files.isReadable(file) || !Files.isWritable(file)) {
+					LOGGER.fatal("Cannot read and write to the supplied authentication file {}", file);
+					return;
+				}
+				
+				try {
+					final byte[] bytes = Files.readAllBytes(file);
+					final AuthenticationData authenticationData = SimpleAuthenticationFileUtil.read(bytes);
+					
+					LOGGER.info("Use an existing authentication file with method " + authenticationData.creator().name());
+					
+					selectedAuthenticator = authenticationData.creator().create(headless, loggerStream, System.in).existingAuthentication(authenticationData.file()).buildAuthenticator(xBoxFile != null);
+					selectedCreator = authenticationData.creator();
+				} catch (final IOException ex) {
+					LOGGER.error("Could not use existing authentication file", ex);
+				}
 			}
 			
-			try {
-				final byte[] bytes = Files.readAllBytes(file);
-				final AuthenticationData authenticationData = SimpleAuthenticationFileUtil.read(bytes);
+			// Create new authentication
+			if (selectedAuthenticator == null || selectedCreator == null) {
+				LOGGER.info("Requested a new oauth authentication with method " + authenticationMethod.name());
 				
-				LOGGER.info("Use an existing authentication file with method " + authenticationData.creator().name());
-				
-				selectedAuthenticator = authenticationData.creator().create(headless).existingAuthentication(authenticationData.file()).buildAuthenticator(xBoxFile != null);
-				selectedCreator = authenticationData.creator();
-			} catch (final IOException ex) {
-				LOGGER.error("Could not use existing authentication file", ex);
-			}
-		}
-		
-		// Create new authentication
-		if (selectedAuthenticator == null || selectedCreator == null) {
-			LOGGER.info("Requested a new oauth authentication with method " + authenticationMethod.name());
-			
-			try {
-				selectedAuthenticator = authenticationMethod.create(headless).initalAuthentication().buildAuthenticator(xBoxFile != null);
-				selectedCreator = authenticationMethod;
-			} catch (final AuthenticationException ex) {
-				LOGGER.fatal("Inital authentication failed. Run the program again for an other try", ex);
-				return;
-			}
-		}
-		
-		if (xBoxFile != null) {
-			LOGGER.info("Run authentication for minecraft and xBox services");
-		} else {
-			LOGGER.info("Run authentication for minecraft services");
-		}
-		
-		final Authenticator authenticator = selectedAuthenticator;
-		final AuthenticationMethodCreator creator = selectedCreator;
-		
-		// Save lambda for authentication file
-		final Predicate<AuthenticationFile> saveFile = resultFile -> {
-			try {
-				final byte[] bytes = SimpleAuthenticationFileUtil.write(new AuthenticationData(resultFile, creator));
-				Files.write(file, bytes);
-				return true;
-			} catch (final IOException ex) {
-				LOGGER.fatal("Cannot save authentication file", ex);
-				return false;
-			}
-		};
-		
-		// Run authenticator and save authentication file
-		try {
-			authenticator.run();
-		} catch (final AuthenticationException ex) {
-			LOGGER.fatal("An error occured while authentication. Trying to save authentication file", ex);
-			if (authenticator.getResultFile() != null) {
-				if (!saveFile.test(authenticator.getResultFile())) {
+				try {
+					selectedAuthenticator = authenticationMethod.create(headless, loggerStream, System.in).initalAuthentication().buildAuthenticator(xBoxFile != null);
+					selectedCreator = authenticationMethod;
+				} catch (final AuthenticationException ex) {
+					LOGGER.fatal("Inital authentication failed. Run the program again for an other try", ex);
 					return;
 				}
 			}
-			return;
-		}
-		
-		if (!saveFile.test(authenticator.getResultFile())) {
-			return;
-		}
-		
-		final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		
-		if (userFile != null) {
-			LOGGER.info("Write user file");
-			try {
-				Files.writeString(userFile, gson.toJson(authenticator.getUser().get()), StandardCharsets.UTF_8);
-			} catch (final IOException ex) {
-				LOGGER.error("Could not write user file", ex);
+			
+			if (xBoxFile != null) {
+				LOGGER.info("Run authentication for minecraft and xBox services");
+			} else {
+				LOGGER.info("Run authentication for minecraft services");
 			}
-		}
-		
-		if (xBoxFile != null) {
-			LOGGER.info("Write xBox profile file");
+			
+			final Authenticator authenticator = selectedAuthenticator;
+			final AuthenticationMethodCreator creator = selectedCreator;
+			
+			// Save lambda for authentication file
+			final Predicate<AuthenticationFile> saveFile = resultFile -> {
+				try {
+					final byte[] bytes = SimpleAuthenticationFileUtil.write(new AuthenticationData(resultFile, creator));
+					Files.write(file, bytes);
+					return true;
+				} catch (final IOException ex) {
+					LOGGER.fatal("Cannot save authentication file", ex);
+					return false;
+				}
+			};
+			
+			// Run authenticator and save authentication file
 			try {
-				Files.writeString(xBoxFile, gson.toJson(authenticator.getXBoxProfile().get()), StandardCharsets.UTF_8);
-			} catch (final IOException ex) {
-				LOGGER.error("Could not write xBox profile file", ex);
+				authenticator.run();
+			} catch (final AuthenticationException ex) {
+				LOGGER.fatal("An error occured while authentication. Trying to save authentication file", ex);
+				if (authenticator.getResultFile() != null) {
+					if (!saveFile.test(authenticator.getResultFile())) {
+						return;
+					}
+				}
+				return;
+			}
+			
+			if (!saveFile.test(authenticator.getResultFile())) {
+				return;
+			}
+			
+			// Write files
+			final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			
+			if (userFile != null) {
+				LOGGER.info("Write user file");
+				try {
+					Files.writeString(userFile, gson.toJson(authenticator.getUser().get()), StandardCharsets.UTF_8);
+				} catch (final IOException ex) {
+					LOGGER.error("Could not write user file", ex);
+				}
+			}
+			
+			if (xBoxFile != null) {
+				LOGGER.info("Write xBox profile file");
+				try {
+					Files.writeString(xBoxFile, gson.toJson(authenticator.getXBoxProfile().get()), StandardCharsets.UTF_8);
+				} catch (final IOException ex) {
+					LOGGER.error("Could not write xBox profile file", ex);
+				}
 			}
 		}
 	}
