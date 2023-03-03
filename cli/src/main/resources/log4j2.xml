@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" shutdownHook="disable">
+	<Appenders>
+		<Console name="Console">
+			<PatternLayout>
+				<MarkerPatternSelector defaultPattern="[%d{ddMMMyyyy HH:mm:ss.SSS}] [%t/%level] [%logger/%markerSimpleName]: %msg{nolookups}%n%xEx">
+					<PatternMatch key="LAUNCH" pattern="%msg{nolookups}%n%xEx" />
+				</MarkerPatternSelector>
+			</PatternLayout>
+		</Console>
+		<RollingRandomAccessFile name="File" fileName="logs/latest.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz">
+			<PatternLayout>
+				<MarkerPatternSelector defaultPattern="[%d{ddMMMyyyy HH:mm:ss.SSS}] [%t/%level] [%logger/%markerSimpleName]: %msg{nolookups}%n%xEx">
+					<PatternMatch key="LAUNCH" pattern="%msg{nolookups}%n%xEx" />
+				</MarkerPatternSelector>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+				<OnStartupTriggeringPolicy />
+			</Policies>
+			<DefaultRolloverStrategy max="10" fileIndex="min" />
+		</RollingRandomAccessFile>
+		<RollingRandomAccessFile name="DebugFile" fileName="logs/debug.log" filePattern="logs/debug-%i.log.gz">
+			<PatternLayout>
+				<MarkerPatternSelector defaultPattern="[%d{ddMMMyyyy HH:mm:ss.SSS}] [%t/%level] [%logger/%markerSimpleName]: %msg{nolookups}%n%xEx">
+					<PatternMatch key="LAUNCH" pattern="%msg{nolookups}%n%xEx" />
+				</MarkerPatternSelector>
+			</PatternLayout>
+			<Policies>
+				<OnStartupTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="200MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="5" fileIndex="min" />
+		</RollingRandomAccessFile>
+	</Appenders>
+	<Loggers>
+		<Root level="all">
+			<AppenderRef ref="Console" level="info" />
+			<AppenderRef ref="File" level="info" />
+			<AppenderRef ref="DebugFile" level="debug" />
+		</Root>
+	</Loggers>
+</Configuration>
