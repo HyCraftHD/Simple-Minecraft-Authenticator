@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Login failed</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" sizes="16x16" href="/favicon.ico" />
+    <style>
+        .outer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #121212;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .inner {
+            background-color: #000000;
+            width: 50vw;
+            border-radius: 20px;
+            text-align: center;
+        }
+        h1, h2, h3 {
+            color: #a83636;
+        }
+        h1 {
+            padding: 50px;
+        }
+        h2, h3 {
+            padding: 0 50px 50px;
+        }
+        a:link, a:visited {
+            color: #34386b;
+        }
+    </style>
+    <script type="text/javascript">
+        setTimeout(function () {
+        	window.location.href = "/ms-oauth/login";
+        }, 5000);
+    </script>
+</head>
+
+<body>
+    <div class="outer">
+        <div class="inner">
+            <h1>Login failed!</h1>
+            <h2>Redirect to login page in 5 seconds</h2>
+            <h3>If you are not redirected automatically, follow this <a href="/ms-oauth/login">link to the login page</a>.</h3>
+        </div>
+    </div>
+</body>
+
+</html>
