@@ -25,7 +25,7 @@ public class HeadlessWebAuthentication extends AbstractAuthenticationMethod {
 	public HeadlessWebAuthentication(PrintStream out, InputStream in, ExecutorService executor) {
 		super(out, executor);
 		reader = new BufferedReader(new InputStreamReader(new UnclosableInputStream(in), StandardCharsets.UTF_8));
-		redirectUrl = WebAuthentication.BASE_URL.replace("{port}", Integer.toString(9999) + WebAuthentication.REDIRECT_PATH);
+		redirectUrl = WebAuthentication.EXISTING_REDIRECT_URL;
 	}
 	
 	@Override
