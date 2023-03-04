@@ -20,8 +20,8 @@ repositories {
 }
 
 dependencies {
-	implementation project(":library")
-	implementation group: "net.hycrafthd", name: "minecraft_authenticator", version: config.minecraft_authenticator.version
+	api project(":library")
+	
 	implementation group: "net.sf.jopt-simple", name: "jopt-simple", version: config.jopt_simple.version
 	
 	implementation group: "org.apache.logging.log4j", name: "log4j-api", version: config.log4j.version
@@ -33,23 +33,22 @@ group = "net.hycrafthd"
 archivesBaseName = "simple_minecraft_authenticator_cli"
 version = "2.0.0"
 
-allprojects {
-	tasks.withType(JavaCompile) {
-		options.encoding = "UTF-8"
-	}
-	
-	sourceSets {
-		main
-	}
-	
-	java {
-		toolchain {
-			languageVersion = JavaLanguageVersion.of(17)
-		}
-		withSourcesJar()
-		withJavadocJar()
-	}
+tasks.withType(JavaCompile) {
+	options.encoding = "UTF-8"
 }
+
+sourceSets {
+	main
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+	withSourcesJar()
+	withJavadocJar()
+}
+
 
 tasks.named("jar") {
 	from "LICENSE"
@@ -95,6 +94,7 @@ afterEvaluate {
 		task.group == "publishing"
 	}.each { task ->
 		task.dependsOn("signJar")
+		task.dependsOn(":library:signJar")
 	}
 }
 
@@ -162,5 +162,5 @@ def getValue(name) {
 			return project.getProperty(name)
 		}
 	}
-	return null;
+	return null
 }

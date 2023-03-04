@@ -11,12 +11,28 @@ repositories {
 }
 
 dependencies {
-	implementation group: "net.hycrafthd", name: "minecraft_authenticator", version: config.minecraft_authenticator.version
+	api group: "net.hycrafthd", name: "minecraft_authenticator", version: config.minecraft_authenticator.version
 }
 
 group = rootProject.group
 archivesBaseName = "simple_minecraft_authenticator"
 version = rootProject.version
+
+tasks.withType(JavaCompile) {
+	options.encoding = "UTF-8"
+}
+
+sourceSets {
+	main
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+	withSourcesJar()
+	withJavadocJar()
+}
 
 tasks.named("jar") {
 	from "../LICENSE"
@@ -62,5 +78,73 @@ afterEvaluate {
 		task.group == "publishing"
 	}.each { task ->
 		task.dependsOn("signJar")
+		task.dependsOn(":library:signJar")
 	}
+}
+
+tasks.withType(PublishToMavenRepository) {
+	onlyIf {
+		getValue("maven.password") != null
+	}
+}
+
+publishing {
+	repositories {
+		maven {
+			url "https://repo.u-team.info"
+			credentials {
+				username = "maven"
+				password = getValue("maven.password")
+			}
+		}
+	}
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+			
+			groupId = project.group
+			artifactId = project.archivesBaseName
+			version = project.version
+			
+			pom {
+				name = project.archivesBaseName
+				description = "Simple-Minecraft-Authenticator"
+				url = "https://github.com/HyCraftHD/Simple-Minecraft-Authenticator"
+				scm {
+					url = "https://github.com/HyCraftHD/Simple-Minecraft-Authenticator"
+					connection = "scm:git:git://github.com/HyCraftHD/Simple-Minecraft-Authenticator.git"
+					developerConnection = "scm:git:git@github.com:HyCraftHD/Simple-Minecraft-Authenticator.git"
+				}
+				
+				issueManagement {
+					system = "github"
+					url = "https://github.com/HyCraftHD/Simple-Minecraft-Authenticator/issues"
+				}
+				licenses {
+					license {
+						name = "Apache License 2.0"
+						url = "https://github.com/HyCraftHD/Simple-Minecraft-Authenticator/blob/main/LICENSE"
+						distribution = "repo"
+					}
+				}
+				developers {
+					developer {
+						name = "HyCraftHD"
+					}
+				}
+			}
+		}
+	}
+}
+
+def getValue(name) {
+	def envVariable = System.getenv(name)
+	if(envVariable != null) {
+		return envVariable
+	} else {
+		if (project.hasProperty(name)) {
+			return project.getProperty(name)
+		}
+	}
+	return null
 }
