@@ -60,6 +60,7 @@ tasks.named("jar") {
 				"Implementation-Vendor": "HyCraftHD",
 				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
 				"Fingerprint": project.findProperty("keystore.fingerprint") ?: "NONE",
+				"Main-Class": "net.hycrafthd.simple_minecraft_authenticator.cli.Main"
 				)
 	}
 }
@@ -87,30 +88,56 @@ tasks.create("signJar") {
 	}
 }
 
+shadowJar {
+	archiveClassifier = "fat"
+	
+	transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer)
+	transform(com.github.jengelman.gradle.plugins.shadow.transformers.ApacheLicenseResourceTransformer)
+	transform(com.github.jengelman.gradle.plugins.shadow.transformers.ApacheNoticeResourceTransformer)
+	transform(com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer)
+	
+	manifest {
+		attributes(
+				"Multi-Release": "true"
+				)
+	}
+}
+
+tasks.create("signShadowJar") {
+	dependsOn tasks.named("shadowJar")
+	mustRunAfter tasks.named("shadowJar")
+	
+	enabled = project.hasProperty("createBuild")
+	
+	def keyStore = project.findProperty("keystore")
+	def alias = project.findProperty("keystore.alias")
+	def storePass = project.findProperty("keystore.password")
+	def keyPass = project.findProperty("keystore.password_key")
+	
+	doLast {
+		ant.signjar(
+				keyStore: keyStore,
+				alias: alias,
+				storepass: storePass,
+				keyPass: keyPass,
+				jar: tasks.named("shadowJar").get().archiveFile.get(),
+				signedJar: tasks.named("shadowJar").get().archiveFile.get()
+				)
+	}
+}
+
 tasks.named("assemble") {
 	dependsOn tasks.named("signJar")
+	dependsOn tasks.named("signShadowJar")
 }
 afterEvaluate {
 	tasks.matching { task ->
 		task.group == "publishing"
 	}.each { task ->
 		task.dependsOn("signJar")
-		task.dependsOn(":library:signJar")
+		task.dependsOn("signShadowJar")
 	}
 }
-
-shadowJar {
-	archiveClassifier = "fat"
-}
-
-/*tasks.create("fatJar", Jar) {
- archiveClassifier = "fat"
- duplicatesStrategy = DuplicatesStrategy.WARN
- from zipTree(tasks.named("jar").get().archiveFile)
- from {
- configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
- }
- }*/
 
 tasks.withType(PublishToMavenRepository) {
 	onlyIf {

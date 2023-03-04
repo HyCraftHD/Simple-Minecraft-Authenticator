@@ -78,7 +78,6 @@ afterEvaluate {
 		task.group == "publishing"
 	}.each { task ->
 		task.dependsOn("signJar")
-		task.dependsOn(":library:signJar")
 	}
 }
 
