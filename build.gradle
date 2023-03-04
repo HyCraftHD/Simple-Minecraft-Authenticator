@@ -10,6 +10,7 @@ buildscript {
 plugins {
 	id "java-library"
 	id "maven-publish"
+	id "com.github.johnrengelman.shadow" version "8.1.0"
 }
 
 repositories {
@@ -97,6 +98,19 @@ afterEvaluate {
 		task.dependsOn(":library:signJar")
 	}
 }
+
+shadowJar {
+	archiveClassifier = "fat"
+}
+
+/*tasks.create("fatJar", Jar) {
+ archiveClassifier = "fat"
+ duplicatesStrategy = DuplicatesStrategy.WARN
+ from zipTree(tasks.named("jar").get().archiveFile)
+ from {
+ configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+ }
+ }*/
 
 tasks.withType(PublishToMavenRepository) {
 	onlyIf {
