@@ -12,16 +12,10 @@ repositories {
 
 dependencies {
 	implementation group: "net.hycrafthd", name: "minecraft_authenticator", version: config.minecraft_authenticator.version
-	implementation rootProject
-	implementation group: "net.sf.jopt-simple", name: "jopt-simple", version: config.jopt_simple.version
-	
-	implementation group: "org.apache.logging.log4j", name: "log4j-api", version: config.log4j.version
-	implementation group: "org.apache.logging.log4j", name: "log4j-core", version: config.log4j.version
-	implementation group: "org.apache.logging.log4j", name: "log4j-iostreams", version: config.log4j.version
 }
 
-group = "net.hycrafthd"
-archivesBaseName = "simple_minecraft_authenticator_cli"
+group = rootProject.group
+archivesBaseName = "simple_minecraft_authenticator"
 version = rootProject.version
 
 tasks.named("jar") {
