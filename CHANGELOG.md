@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2023-04-17
+### Changed
+ - Remove unused interfaces
+
 ## [2.0.0] - 2023-03-04
 ### Changed
  - Rewrite web authentication method with jdk.httpserver
