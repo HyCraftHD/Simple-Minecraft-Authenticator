@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.1] - 2023-04-19
+### Changed
+ - Update to 3.0.5 minecraft authenticator to include login state callbacks
+
 ## [2.1.0] - 2023-04-17
 ### Changed
  - Remove unused interfaces
