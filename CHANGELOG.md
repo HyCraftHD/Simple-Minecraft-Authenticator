@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.2.0] - 2023-04-28
+### Changed
+ - Cancel future for inital authentication now, when outside thread is interrupted and always call finishInitalAuthentication to free up resources
+
 ## [2.1.1] - 2023-04-19
 ### Changed
  - Update to 3.0.5 minecraft authenticator to include login state callbacks
