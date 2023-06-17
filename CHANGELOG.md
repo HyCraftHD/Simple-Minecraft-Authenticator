@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.2.1] - 2023-06-17
+### Changed
+ - Expose executor
+
 ## [2.2.0] - 2023-04-28
 ### Changed
  - Cancel future for inital authentication now, when outside thread is interrupted and always call finishInitalAuthentication to free up resources
