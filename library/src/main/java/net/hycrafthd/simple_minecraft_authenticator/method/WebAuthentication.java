@@ -48,7 +48,6 @@ public class WebAuthentication extends AbstractAuthenticationMethod {
 	
 	public WebAuthentication(PrintStream out, ExecutorService executor) {
 		super(out, executor);
-		timeout = 300;
 	}
 	
 	@Override
