@@ -64,4 +64,8 @@ public final class SimpleMinecraftAuthentication {
 		return getMethod("console").get();
 	}
 	
+	public static ExecutorService getExecutor() {
+		return executor;
+	}
+	
 }
