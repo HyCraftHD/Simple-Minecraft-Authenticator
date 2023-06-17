@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.2.2] - 2023-06-17
+### Changed
+ - Move future stuff to util class for usage outside of this library
+
 ## [2.2.1] - 2023-06-17
 ### Changed
  - Expose executor
