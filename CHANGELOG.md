@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.2.3] - 2023-09-14
+### Changed
+ - Update minecraft authenticator version to 3.0.6 to fix a module bug with gson
+
 ## [2.2.2] - 2023-06-17
 ### Changed
  - Move future stuff to util class for usage outside of this library
